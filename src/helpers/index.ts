@@ -10,7 +10,7 @@ export const generateTiles = (): TilesProps[][] => {
     for (let c = 0; c < MAX_COLUMNS; c++) {
       tiles[r].push({
         value: TilesValue.None,
-        status: TilesStatus.Opened,
+        status: TilesStatus.Visible,
       });
     }
   }

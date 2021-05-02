@@ -19,7 +19,13 @@ const GameWindow: React.FC = () => {
   const renderTiles = (): React.ReactNode => {
     return tiles.map((row, rowIndex) =>
       row.map((column, columnIndex) => (
-        <TileButton key={`${rowIndex}-${columnIndex}`} />
+        <TileButton
+          key={`${rowIndex}-${columnIndex}`}
+          row={rowIndex}
+          column={columnIndex}
+          status={column.status}
+          value={column.value}
+        />
       ))
     );
   };
