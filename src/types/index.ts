@@ -8,15 +8,7 @@ export enum TilesValue {
   Six = 5,
   Seven = 6,
   Eight = 8,
-  Nine = 9,
-  Ten = 10,
-  Eleven = 11,
-  Twelve = 12,
-  Thirteen = 13,
-  Fourteen = 14,
-  Fifhteen = 15,
-  Sixteen = 16,
-  Bomb = 17,
+  Bomb = 9,
 }
 
 export enum TilesStatus {

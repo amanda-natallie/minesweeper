@@ -41,5 +41,61 @@ export const generateTiles = (): TilesProps[][] => {
     }
   }
 
+  //showing bombs for each tile
+
+  for (let rowIndex = 0; rowIndex < MAX_ROWS; rowIndex++) {
+    for (let columnIndex = 0; columnIndex < MAX_COLUMNS; columnIndex++) {
+      const currentTile = tiles[rowIndex][columnIndex];
+
+      if (currentTile.value !== TilesValue.Bomb) {
+        let numberOfBombs = 0;
+
+        const topLeftBomb =
+          rowIndex > 0 && columnIndex > 0
+            ? tiles[rowIndex - 1][columnIndex - 1]
+            : null;
+
+        const topBomb = rowIndex > 0 ? tiles[rowIndex - 1][columnIndex] : null;
+        const topRightBomb =
+          rowIndex > 0 && columnIndex < MAX_COLUMNS - 1
+            ? tiles[rowIndex - 1][columnIndex + 1]
+            : null;
+        const leftBomb =
+          columnIndex > 0 ? tiles[rowIndex][columnIndex - 1] : null;
+        const rightBomb =
+          columnIndex < MAX_COLUMNS - 1
+            ? tiles[rowIndex][columnIndex + 1]
+            : null;
+
+        const bottomLeftBomb =
+          rowIndex < MAX_ROWS - 1 && columnIndex > 0
+            ? tiles[rowIndex + 1][columnIndex - 1]
+            : null;
+        const bottomBomb =
+          rowIndex < MAX_ROWS - 1 ? tiles[rowIndex + 1][columnIndex] : null;
+        const BottomRightBomb =
+          rowIndex < MAX_ROWS - 1 && columnIndex < MAX_COLUMNS - 1
+            ? tiles[rowIndex + 1][columnIndex + 1]
+            : null;
+
+        topLeftBomb?.value === TilesValue.Bomb && numberOfBombs++;
+        topBomb?.value === TilesValue.Bomb && numberOfBombs++;
+        topRightBomb?.value === TilesValue.Bomb && numberOfBombs++;
+        leftBomb?.value === TilesValue.Bomb && numberOfBombs++;
+        rightBomb?.value === TilesValue.Bomb && numberOfBombs++;
+        bottomLeftBomb?.value === TilesValue.Bomb && numberOfBombs++;
+        bottomBomb?.value === TilesValue.Bomb && numberOfBombs++;
+        BottomRightBomb?.value === TilesValue.Bomb && numberOfBombs++;
+
+        if (numberOfBombs > 0) {
+          tiles[rowIndex][columnIndex] = {
+            ...currentTile,
+            value: numberOfBombs,
+          };
+        }
+      }
+    }
+  }
+
   return tiles;
 };

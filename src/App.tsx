@@ -6,7 +6,15 @@ import { styleReset } from "react95";
 import original from "react95/dist/themes/original";
 import GameWindow from "./components/GameWindow";
 
-const GlobalStyles = createGlobalStyle`${styleReset}`;
+const GlobalStyles = createGlobalStyle`
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  ${styleReset}
+`;
 
 const App: React.FC = () => (
   <div>

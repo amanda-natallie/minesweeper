@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-import {
-  Window,
-  WindowHeader,
-  WindowContent,
-  Button,
-  Toolbar,
-  Panel,
-} from "react95";
+import { Window, WindowHeader, WindowContent, Button, Toolbar } from "react95";
 import { generateTiles } from "../../helpers";
+import { TilesProps } from "../../types";
 
 import TileButton from "../TileButton";
-import { Wrapper } from "./styles";
+import { Content, Wrapper } from "./styles";
 
 const GameWindow: React.FC = () => {
-  const [tiles, setTiles] = useState(generateTiles());
+  const [tiles] = useState<TilesProps[][]>(generateTiles());
+  const [timer, setTimer] = useState<number>(0);
 
   const renderTiles = (): React.ReactNode => {
     return tiles.map((row, rowIndex) =>
@@ -51,8 +46,7 @@ const GameWindow: React.FC = () => {
             Edit
           </Button>
         </Toolbar>
-        <WindowContent>{renderTiles()}</WindowContent>
-        <Panel variant="well" className="footer"></Panel>
+        <Content>{renderTiles()}</Content>
       </Window>
     </Wrapper>
   );

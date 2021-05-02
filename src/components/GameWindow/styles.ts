@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { WindowContent } from "react95";
 
 export const Wrapper = styled.div`
   background: cyan;
@@ -40,7 +41,12 @@ export const Wrapper = styled.div`
     }
   }
   .window {
-    width: 530px;
+    width: 620px;
     min-height: 200px;
   }
+`;
+
+export const Content = styled(WindowContent)`
+  display: flex;
+  flex-wrap: wrap;
 `;
