@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Window,
@@ -18,9 +18,15 @@ const GameWindow: React.FC = () => {
 
   const renderTiles = (): React.ReactNode => {
     return tiles.map((row, rowIndex) =>
-      row.map((column, columnIndex) => <TileButton />)
+      row.map((column, columnIndex) => (
+        <TileButton key={`${rowIndex}-${columnIndex}`} />
+      ))
     );
   };
+
+  useEffect(() => {
+    console.log({ tiles });
+  }, [tiles]);
 
   return (
     <Wrapper>
@@ -37,9 +43,6 @@ const GameWindow: React.FC = () => {
           </Button>
           <Button variant="menu" size="sm">
             Edit
-          </Button>
-          <Button variant="menu" size="sm" disabled>
-            Save
           </Button>
         </Toolbar>
         <WindowContent>{renderTiles()}</WindowContent>
