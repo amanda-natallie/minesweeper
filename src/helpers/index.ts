@@ -1,7 +1,7 @@
 import { MAX_COLUMNS, MAX_ROWS } from "../constants";
 import { TilesProps, TilesStatus, TilesValue } from "../types";
 
-export const generateTiles = () => {
+export const generateTiles = (): TilesProps[][] => {
   const tiles: TilesProps[][] = [];
   for (let r = 0; r < MAX_ROWS; r++) {
     tiles.push([]);

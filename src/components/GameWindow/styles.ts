@@ -40,17 +40,7 @@ export const Wrapper = styled.div`
     }
   }
   .window {
-    width: 400px;
+    width: 530px;
     min-height: 200px;
-  }
-  .window:nth-child(2) {
-    margin: 2rem;
-  }
-  .footer {
-    display: block;
-    margin: 0.25rem;
-    height: 31px;
-    line-height: 31px;
-    padding-left: 0.25rem;
   }
 `;

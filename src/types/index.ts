@@ -25,7 +25,7 @@ export enum TilesStatus {
   Flagged,
 }
 
-export interface TilesProps {
+export type TilesProps = {
   value: TilesValue;
   status: TilesStatus;
-}
+};

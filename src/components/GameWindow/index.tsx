@@ -1,17 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Window,
-  WindowContent,
   WindowHeader,
+  WindowContent,
   Button,
   Toolbar,
   Panel,
 } from "react95";
-import Grid from "../Grid";
+import { generateTiles } from "../../helpers";
+
+import TileButton from "../TileButton";
 import { Wrapper } from "./styles";
 
 const GameWindow: React.FC = () => {
+  const [tiles, setTiles] = useState(generateTiles());
+
+  const renderTiles = (): React.ReactNode => {
+    return tiles.map((row, rowIndex) =>
+      row.map((column, columnIndex) => <TileButton />)
+    );
+  };
+
   return (
     <Wrapper>
       <Window className="window">
@@ -32,10 +42,8 @@ const GameWindow: React.FC = () => {
             Save
           </Button>
         </Toolbar>
-
-        <Panel variant="well" className="footer">
-          <Grid />
-        </Panel>
+        <WindowContent>{renderTiles()}</WindowContent>
+        <Panel variant="well" className="footer"></Panel>
       </Window>
     </Wrapper>
   );
