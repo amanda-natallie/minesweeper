@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from "react";
-
-import { Window, WindowHeader, Counter, Button, Toolbar } from "react95";
+import { useDispatch } from "react-redux";
+import { Window, Counter, Button, Toolbar } from "react95";
 import { MAX_COLUMNS, MAX_ROWS } from "../../constants";
-import { generateTiles, openEmptyTiles } from "../../helpers";
-import { MessageProps, TilesProps, TilesStatus, TilesValue } from "../../types";
-import CloseButton from "../CloseButton";
-import FeedbackModal from "../FeedbackModal";
+import { generateTiles, openEmptyTiles } from "../../helpers/tilesHelpers";
+import {
+  TilesProps,
+  TilesStatus,
+  TilesValue,
+} from "../../store/modules/game/types";
+import { setModalInfo } from "../../store/modules/modal/actions";
 
+import CloseButton from "../CloseButton";
 import TileButton from "../TileButton";
 import { Content, FlagCounter, StyledWindowHeader, Wrapper } from "./styles";
 
 const GameWindow: React.FC = () => {
-  const [tiles, setTiles] = useState<TilesProps[][]>(generateTiles());
+  const dispatch = useDispatch();
   const [timer, setTimer] = useState<number>(0);
+
+  const [tiles, setTiles] = useState<TilesProps[][]>(generateTiles());
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [bombCounter, setBombCounter] = useState<number>(0);
   const [gameOver, setIsGameOver] = useState<boolean>(false);
   const [gameWon, setIsGameWon] = useState<boolean>(false);
-
-  // TODO: CREATE A MODAL OF GAME WIN/OVER
-  const [gameFinishedMessage, setGameFinishedMessage] = useState<MessageProps>({
-    isOpen: false,
-    message: "",
-    icon: "",
-  });
 
   const handleTileClick = (
     e: React.MouseEvent,
@@ -150,11 +149,14 @@ const GameWindow: React.FC = () => {
       setGameStarted(false);
       setTimer(0);
       setTiles(showAllBombs());
-      setGameFinishedMessage({
-        isOpen: true,
-        message: "You clicked in one bomb! Game over.",
-        icon: "💣🔥",
-      });
+      dispatch(
+        setModalInfo({
+          isOpen: true,
+          title: "Game over",
+          message: "You clicked in one bomb! Game over.",
+          icon: "💣🔥",
+        })
+      );
     }
   }, [gameOver]);
 
@@ -162,11 +164,14 @@ const GameWindow: React.FC = () => {
     if (gameWon) {
       setGameStarted(false);
       setTiles(showAllBombs());
-      setGameFinishedMessage({
-        isOpen: true,
-        message: "You won! Congratulations",
-        icon: "🎉🎉",
-      });
+      dispatch(
+        setModalInfo({
+          isOpen: true,
+          title: "game completed!",
+          message: "You won! Congratulations",
+          icon: "🎉🎉",
+        })
+      );
     }
   }, [gameWon]);
 
@@ -221,12 +226,6 @@ const GameWindow: React.FC = () => {
           <Content>{renderTiles()}</Content>
         </Window>
       </Wrapper>
-      {gameFinishedMessage.isOpen && (
-        <FeedbackModal
-          gameFinishedMessage={gameFinishedMessage}
-          setGameFinishedMessage={setGameFinishedMessage}
-        />
-      )}
     </React.Fragment>
   );
 };

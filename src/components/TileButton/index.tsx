@@ -1,5 +1,5 @@
 import React from "react";
-import { TilesStatus, TilesValue } from "../../types";
+import { TilesStatus, TilesValue } from "../../store/modules/game/types";
 import { StyledButton } from "./styles";
 
 interface Iprops {

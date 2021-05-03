@@ -1,5 +1,9 @@
 import { MAX_COLUMNS, MAX_ROWS, NUMBER_OF_BOMBS } from "../constants";
-import { TilesProps, TilesStatus, TilesValue } from "../types";
+import {
+  TilesProps,
+  TilesValue,
+  TilesStatus,
+} from "../store/modules/game/types";
 
 const gatherAdjacentTiles = (
   tiles: TilesProps[][],

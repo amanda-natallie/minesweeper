@@ -1,39 +1,34 @@
 import React from "react";
-import { MessageProps } from "../../types";
 import { BouncingIcon, ModalWrapper, StyledWindow } from "./styles";
 import { Button, WindowContent } from "react95";
 import CloseButton from "../CloseButton";
 import { StyledWindowHeader } from "../GameWindow/styles";
+import { ModalState } from "../../store/modules/modal/types";
 
 interface ModalProps {
-  gameFinishedMessage: MessageProps;
-  setGameFinishedMessage: Function;
+  isOpen: boolean;
+  setOpen: () => void;
+  info: ModalState;
 }
 
 export const FeedbackModal = ({
-  gameFinishedMessage,
-  setGameFinishedMessage,
+  isOpen,
+  setOpen,
+  info,
 }: ModalProps): JSX.Element => {
-  const handleOkButton = () => {
-    setGameFinishedMessage({
-      isOpen: false,
-      message: "",
-      icon: "",
-    });
-  };
   return (
-    <ModalWrapper open={gameFinishedMessage.isOpen}>
+    <ModalWrapper open={isOpen}>
       <StyledWindow>
         <StyledWindowHeader>
-          <span>game over!</span>
-          <CloseButton action={() => handleOkButton()} />
+          <span>{info.title}</span>
+          <CloseButton action={() => setOpen()} />
         </StyledWindowHeader>
 
         <WindowContent>
-          <BouncingIcon>{gameFinishedMessage.icon}</BouncingIcon>
-          <p>{gameFinishedMessage.message}</p>
+          <BouncingIcon>{info.icon}</BouncingIcon>
+          <p>{info.message}</p>
         </WindowContent>
-        <Button onClick={() => handleOkButton()}>Ok</Button>
+        <Button onClick={() => setOpen()}>Ok</Button>
       </StyledWindow>
     </ModalWrapper>
   );

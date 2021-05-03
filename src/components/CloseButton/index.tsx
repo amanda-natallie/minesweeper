@@ -1,6 +1,9 @@
 import React from "react";
-import { CloseButtonProps } from "../../types";
 import { StyledCloseButton } from "./styles";
+
+export interface CloseButtonProps {
+  action?: Function;
+}
 
 const CloseButton = ({ action }: CloseButtonProps) => {
   return (

@@ -5,6 +5,9 @@ import { styleReset } from "react95";
 
 import original from "react95/dist/themes/original";
 import GameWindow from "./components/GameWindow";
+import ModalContainer from "./components/ModalContainer";
+import { Provider } from "react-redux";
+import store from "./store";
 
 const GlobalStyles = createGlobalStyle`
   
@@ -17,12 +20,13 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 const App: React.FC = () => (
-  <div>
+  <Provider store={store}>
     <GlobalStyles />
     <ThemeProvider theme={original}>
+      <ModalContainer />
       <GameWindow />
     </ThemeProvider>
-  </div>
+  </Provider>
 );
 
 export default App;
