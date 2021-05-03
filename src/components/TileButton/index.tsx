@@ -25,7 +25,7 @@ const TileButton = ({
 }: Iprops) => {
   const renderContent = (): React.ReactNode => {
     switch (status) {
-      case TilesStatus.Opened:
+      case TilesStatus.Closed:
         return null;
       case TilesStatus.Flagged:
         return "🚩";

@@ -50,7 +50,7 @@ export const generateTiles = (): TilesProps[][] => {
     for (let c = 0; c < MAX_COLUMNS; c++) {
       tiles[r].push({
         value: TilesValue.None,
-        status: TilesStatus.Opened,
+        status: TilesStatus.Closed,
       });
     }
   }
@@ -81,7 +81,7 @@ export const generateTiles = (): TilesProps[][] => {
     }
   }
 
-  //showing Tiless for each tile
+  //showing number of bombs for each tile
 
   for (let rowIndex = 0; rowIndex < MAX_ROWS; rowIndex++) {
     for (let columnIndex = 0; columnIndex < MAX_COLUMNS; columnIndex++) {
@@ -152,7 +152,7 @@ export const openEmptyTiles = (
   } = gatherAdjacentTiles(tiles, row, column);
 
   if (
-    topLeftTiles?.status === TilesStatus.Opened &&
+    topLeftTiles?.status === TilesStatus.Closed &&
     topLeftTiles.value !== TilesValue.Bomb
   ) {
     if (topLeftTiles.value === TilesValue.None) {
@@ -163,7 +163,7 @@ export const openEmptyTiles = (
   }
 
   if (
-    topTiles?.status === TilesStatus.Opened &&
+    topTiles?.status === TilesStatus.Closed &&
     topTiles.value !== TilesValue.Bomb
   ) {
     if (topTiles.value === TilesValue.None) {
@@ -174,7 +174,7 @@ export const openEmptyTiles = (
   }
 
   if (
-    topRightTiles?.status === TilesStatus.Opened &&
+    topRightTiles?.status === TilesStatus.Closed &&
     topRightTiles.value !== TilesValue.Bomb
   ) {
     if (topRightTiles.value === TilesValue.None) {
@@ -185,7 +185,7 @@ export const openEmptyTiles = (
   }
 
   if (
-    leftTiles?.status === TilesStatus.Opened &&
+    leftTiles?.status === TilesStatus.Closed &&
     leftTiles.value !== TilesValue.Bomb
   ) {
     if (leftTiles.value === TilesValue.None) {
@@ -196,7 +196,7 @@ export const openEmptyTiles = (
   }
 
   if (
-    rightTiles?.status === TilesStatus.Opened &&
+    rightTiles?.status === TilesStatus.Closed &&
     rightTiles.value !== TilesValue.Bomb
   ) {
     if (rightTiles.value === TilesValue.None) {
@@ -207,7 +207,7 @@ export const openEmptyTiles = (
   }
 
   if (
-    bottomLeftTiles?.status === TilesStatus.Opened &&
+    bottomLeftTiles?.status === TilesStatus.Closed &&
     bottomLeftTiles.value !== TilesValue.Bomb
   ) {
     if (bottomLeftTiles.value === TilesValue.None) {
@@ -218,7 +218,7 @@ export const openEmptyTiles = (
   }
 
   if (
-    bottomTiles?.status === TilesStatus.Opened &&
+    bottomTiles?.status === TilesStatus.Closed &&
     bottomTiles.value !== TilesValue.Bomb
   ) {
     if (bottomTiles.value === TilesValue.None) {
@@ -229,7 +229,7 @@ export const openEmptyTiles = (
   }
 
   if (
-    BottomRightTiles?.status === TilesStatus.Opened &&
+    BottomRightTiles?.status === TilesStatus.Closed &&
     BottomRightTiles.value !== TilesValue.Bomb
   ) {
     if (BottomRightTiles.value === TilesValue.None) {

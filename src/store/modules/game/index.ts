@@ -6,7 +6,7 @@ const INITIAL_STATE: GameState = {
   tiles: [],
   currentTile: {
     value: TilesValue.None,
-    status: TilesStatus.Opened,
+    status: TilesStatus.Closed,
   },
   isGameStarted: false,
   bombCounter: 0,

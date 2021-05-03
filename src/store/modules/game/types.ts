@@ -21,7 +21,7 @@ export enum TilesValue {
 }
 
 export enum TilesStatus {
-  Opened,
+  Closed,
   Visible,
   Flagged,
 }

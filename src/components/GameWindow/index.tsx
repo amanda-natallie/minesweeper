@@ -36,6 +36,7 @@ const GameWindow: React.FC = () => {
       return;
     }
 
+    // make sure we never click on a bomb at the start
     if (!gameStarted) {
       while (currentTile.value === TilesValue.Bomb) {
         console.log("hit a bomb", currentTile);
@@ -68,7 +69,7 @@ const GameWindow: React.FC = () => {
 
         if (
           currentTile.value !== TilesValue.Bomb &&
-          currentTile.status === TilesStatus.Opened
+          currentTile.status === TilesStatus.Closed
         ) {
           noEmptyTilesLeft = true;
           break;
@@ -110,12 +111,12 @@ const GameWindow: React.FC = () => {
     switch (currentTile.status) {
       case TilesStatus.Visible:
         break;
-      case TilesStatus.Opened:
+      case TilesStatus.Closed:
         currentBoard[rowParam][columParam].status = TilesStatus.Flagged;
         setBombCounter((bombCounter) => bombCounter + 1);
         break;
       case TilesStatus.Flagged:
-        currentBoard[rowParam][columParam].status = TilesStatus.Opened;
+        currentBoard[rowParam][columParam].status = TilesStatus.Closed;
         setBombCounter((bombCounter) => bombCounter - 1);
         break;
     }
