@@ -7,7 +7,7 @@ interface Iprops {
   column: number;
   status: TilesStatus;
   value: TilesValue;
-  onClick: (rowParam: number, columnParam: number) => any;
+  onClick: (e: React.MouseEvent, rowParam: number, columnParam: number) => any;
   onContext: (
     e: React.MouseEvent,
     rowParam: number,
@@ -44,7 +44,7 @@ const TileButton = ({
   return (
     <StyledButton
       square
-      onClick={() => onClick(row, column)}
+      onClick={(e: React.MouseEvent) => onClick(e, row, column)}
       active={status === TilesStatus.Visible}
       className={`value-${value}`}
       onContextMenu={(e: React.MouseEvent) => onContext(e, row, column)}

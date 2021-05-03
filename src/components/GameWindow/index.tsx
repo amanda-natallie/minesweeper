@@ -1,23 +1,50 @@
 import React, { useEffect, useState } from "react";
 
 import { Window, WindowHeader, Counter, Button, Toolbar } from "react95";
+import { MAX_COLUMNS, MAX_ROWS } from "../../constants";
 import { generateTiles, openEmptyTiles } from "../../helpers";
-import { TilesProps, TilesStatus, TilesValue } from "../../types";
+import { MessageProps, TilesProps, TilesStatus, TilesValue } from "../../types";
+import CloseButton from "../CloseButton";
+import FeedbackModal from "../FeedbackModal";
 
 import TileButton from "../TileButton";
-import { Content, FlagCounter, Wrapper } from "./styles";
+import { Content, FlagCounter, StyledWindowHeader, Wrapper } from "./styles";
 
 const GameWindow: React.FC = () => {
   const [tiles, setTiles] = useState<TilesProps[][]>(generateTiles());
   const [timer, setTimer] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [bombCounter, setBombCounter] = useState<number>(0);
+  const [gameOver, setIsGameOver] = useState<boolean>(false);
+  const [gameWon, setIsGameWon] = useState<boolean>(false);
 
-  const handleTileClick = (rowParam: number, columParam: number) => {
-    !gameStarted && setGameStarted(true);
+  // TODO: CREATE A MODAL OF GAME WIN/OVER
+  const [gameFinishedMessage, setGameFinishedMessage] = useState<MessageProps>({
+    isOpen: false,
+    message: "",
+    icon: "",
+  });
 
-    const currentTile = tiles[rowParam][columParam];
+  const handleTileClick = (
+    e: React.MouseEvent,
+    rowParam: number,
+    columParam: number
+  ) => {
     let newTiles = tiles.slice();
+    let currentTile = newTiles[rowParam][columParam];
+
+    if (gameOver || gameWon) {
+      return;
+    }
+
+    if (!gameStarted) {
+      while (currentTile.value === TilesValue.Bomb) {
+        console.log("hit a bomb", currentTile);
+        newTiles = generateTiles();
+        currentTile = newTiles[rowParam][columParam];
+      }
+      setGameStarted(true);
+    }
 
     if (
       [TilesStatus.Flagged, TilesStatus.Visible].includes(currentTile.status)
@@ -26,15 +53,47 @@ const GameWindow: React.FC = () => {
     }
 
     if (currentTile.value === TilesValue.Bomb) {
-      //TODO: take care of bomb click
+      setIsGameOver(true);
     } else if (currentTile.value === TilesValue.None) {
-      setTiles(openEmptyTiles(newTiles, rowParam, columParam));
+      newTiles = openEmptyTiles(newTiles, rowParam, columParam);
     } else {
       newTiles[rowParam][columParam].status = TilesStatus.Visible;
-      setTiles(newTiles);
     }
+
+    //check if game is won
+    let noEmptyTilesLeft = false;
+    for (let r = 0; r < MAX_ROWS; r++) {
+      tiles.push([]);
+      for (let c = 0; c < MAX_COLUMNS; c++) {
+        const currentTile = tiles[r][c];
+
+        if (
+          currentTile.value !== TilesValue.Bomb &&
+          currentTile.status === TilesStatus.Opened
+        ) {
+          noEmptyTilesLeft = true;
+          break;
+        }
+      }
+    }
+
+    if (!noEmptyTilesLeft) {
+      newTiles = tiles.map((rows) =>
+        rows.map((col) => {
+          if (col.value === TilesValue.Bomb) {
+            return {
+              ...col,
+              status: TilesStatus.Flagged,
+            };
+          }
+          return col;
+        })
+      );
+      setIsGameWon(true);
+    }
+    setTiles(newTiles);
   };
-  const handleCellContext = (
+  const handleRightClick = (
     e: React.MouseEvent,
     rowParam: number,
     columParam: number
@@ -66,12 +125,12 @@ const GameWindow: React.FC = () => {
   };
 
   const handleResetGame = (): void => {
-    if (gameStarted) {
-      setGameStarted(false);
-      setTimer(0);
-      setTiles(generateTiles());
-      setBombCounter(0);
-    }
+    setIsGameOver(false);
+    setGameStarted(false);
+    setTimer(0);
+    setTiles(generateTiles());
+    setBombCounter(0);
+    setIsGameWon(false);
   };
 
   useEffect(() => {
@@ -86,6 +145,46 @@ const GameWindow: React.FC = () => {
     }
   }, [gameStarted]);
 
+  useEffect(() => {
+    if (gameOver) {
+      setGameStarted(false);
+      setTimer(0);
+      setTiles(showAllBombs());
+      setGameFinishedMessage({
+        isOpen: true,
+        message: "You clicked in one bomb! Game over.",
+        icon: "💣🔥",
+      });
+    }
+  }, [gameOver]);
+
+  useEffect(() => {
+    if (gameWon) {
+      setGameStarted(false);
+      setTiles(showAllBombs());
+      setGameFinishedMessage({
+        isOpen: true,
+        message: "You won! Congratulations",
+        icon: "🎉🎉",
+      });
+    }
+  }, [gameWon]);
+
+  const showAllBombs = (): TilesProps[][] => {
+    const currentTiles = tiles.slice();
+    return currentTiles.map((row) =>
+      row.map((tile) => {
+        if (tile.value === TilesValue.Bomb) {
+          return {
+            ...tile,
+            status: TilesStatus.Visible,
+          };
+        }
+        return tile;
+      })
+    );
+  };
+
   const renderTiles = (): React.ReactNode => {
     return tiles.map((row, rowIndex) =>
       row.map((column, columnIndex) => (
@@ -94,7 +193,7 @@ const GameWindow: React.FC = () => {
           row={rowIndex}
           onClick={handleTileClick}
           onContext={(e: React.MouseEvent) =>
-            handleCellContext(e, rowIndex, columnIndex)
+            handleRightClick(e, rowIndex, columnIndex)
           }
           column={columnIndex}
           status={column.status}
@@ -105,24 +204,30 @@ const GameWindow: React.FC = () => {
   };
 
   return (
-    <Wrapper>
-      <Window className="window">
-        <WindowHeader className="window-header">
-          <span>MineSweeper</span>
-          <Button>
-            <span className="close-icon" />
-          </Button>
-        </WindowHeader>
-        <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-          <Button variant="menu" size="sm" onClick={handleResetGame}>
-            Reset Game
-          </Button>
-          <FlagCounter>🚩 {bombCounter}</FlagCounter>
-          <Counter value={timer} minLength={3} />
-        </Toolbar>
-        <Content>{renderTiles()}</Content>
-      </Window>
-    </Wrapper>
+    <React.Fragment>
+      <Wrapper>
+        <Window className="window">
+          <StyledWindowHeader>
+            <span>MineSweeper</span>
+            <CloseButton />
+          </StyledWindowHeader>
+          <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+            <Button variant="menu" size="sm" onClick={handleResetGame}>
+              Reset Game
+            </Button>
+            <FlagCounter>🚩 {bombCounter}</FlagCounter>
+            <Counter value={timer} minLength={3} />
+          </Toolbar>
+          <Content>{renderTiles()}</Content>
+        </Window>
+      </Wrapper>
+      {gameFinishedMessage.isOpen && (
+        <FeedbackModal
+          gameFinishedMessage={gameFinishedMessage}
+          setGameFinishedMessage={setGameFinishedMessage}
+        />
+      )}
+    </React.Fragment>
   );
 };
 

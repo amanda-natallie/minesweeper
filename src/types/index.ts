@@ -21,3 +21,13 @@ export type TilesProps = {
   value: TilesValue;
   status: TilesStatus;
 };
+
+export interface MessageProps {
+  isOpen: boolean;
+  message: string;
+  icon: string;
+}
+
+export interface CloseButtonProps {
+  action?: Function;
+}
