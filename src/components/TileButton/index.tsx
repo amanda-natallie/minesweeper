@@ -7,9 +7,22 @@ interface Iprops {
   column: number;
   status: TilesStatus;
   value: TilesValue;
+  onClick: (rowParam: number, columnParam: number) => any;
+  onContext: (
+    e: React.MouseEvent,
+    rowParam: number,
+    columnParam: number
+  ) => any;
 }
 
-const TileButton = ({ row, column, status, value }: Iprops) => {
+const TileButton = ({
+  row,
+  column,
+  status,
+  value,
+  onClick,
+  onContext,
+}: Iprops) => {
   const renderContent = (): React.ReactNode => {
     switch (status) {
       case TilesStatus.Opened:
@@ -33,8 +46,10 @@ const TileButton = ({ row, column, status, value }: Iprops) => {
   return (
     <StyledButton
       square
+      onClick={() => onClick(row, column)}
       active={status === TilesStatus.Visible}
       className={`value-${value}`}
+      onContextMenu={(e: React.MouseEvent) => onContext(e, row, column)}
     >
       {renderContent()}
     </StyledButton>

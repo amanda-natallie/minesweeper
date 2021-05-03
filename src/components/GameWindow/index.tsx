@@ -1,15 +1,72 @@
 import React, { useEffect, useState } from "react";
 
-import { Window, WindowHeader, WindowContent, Button, Toolbar } from "react95";
+import { Window, WindowHeader, Counter, Button, Toolbar } from "react95";
 import { generateTiles } from "../../helpers";
-import { TilesProps } from "../../types";
+import { TilesProps, TilesStatus } from "../../types";
 
 import TileButton from "../TileButton";
-import { Content, Wrapper } from "./styles";
+import { Content, FlagCounter, Wrapper } from "./styles";
 
 const GameWindow: React.FC = () => {
-  const [tiles] = useState<TilesProps[][]>(generateTiles());
+  const [tiles, setTiles] = useState<TilesProps[][]>(generateTiles());
   const [timer, setTimer] = useState<number>(0);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [bombCounter, setBombCounter] = useState<number>(0);
+
+  const handleTileClick = (rowParam: number, columParam: number) => {
+    !gameStarted && setGameStarted(true);
+  };
+  const handleCellContext = (
+    e: React.MouseEvent,
+    rowParam: number,
+    columParam: number
+  ) => {
+    e.preventDefault();
+
+    if (!gameStarted) {
+      return;
+    }
+
+    const currentTile = tiles[rowParam][columParam];
+
+    let currentBoard = tiles.slice();
+
+    switch (currentTile.status) {
+      case TilesStatus.Visible:
+        break;
+      case TilesStatus.Opened:
+        currentBoard[rowParam][columParam].status = TilesStatus.Flagged;
+        setBombCounter((bombCounter) => bombCounter + 1);
+        break;
+      case TilesStatus.Flagged:
+        currentBoard[rowParam][columParam].status = TilesStatus.Opened;
+        setBombCounter((bombCounter) => bombCounter - 1);
+        break;
+    }
+
+    setTiles(currentBoard);
+  };
+
+  const handleResetGame = (): void => {
+    if (gameStarted) {
+      setGameStarted(false);
+      setTimer(0);
+      setTiles(generateTiles());
+      setBombCounter(0);
+    }
+  };
+
+  useEffect(() => {
+    if (gameStarted) {
+      const counter = setInterval(() => {
+        setTimer((oldTimer) => oldTimer + 1);
+      }, 1000);
+
+      return () => {
+        clearInterval(counter);
+      };
+    }
+  }, [gameStarted]);
 
   const renderTiles = (): React.ReactNode => {
     return tiles.map((row, rowIndex) =>
@@ -17,6 +74,10 @@ const GameWindow: React.FC = () => {
         <TileButton
           key={`${rowIndex}-${columnIndex}`}
           row={rowIndex}
+          onClick={handleTileClick}
+          onContext={(e: React.MouseEvent) =>
+            handleCellContext(e, rowIndex, columnIndex)
+          }
           column={columnIndex}
           status={column.status}
           value={column.value}
@@ -24,10 +85,6 @@ const GameWindow: React.FC = () => {
       ))
     );
   };
-
-  useEffect(() => {
-    console.log({ tiles });
-  }, [tiles]);
 
   return (
     <Wrapper>
@@ -38,13 +95,12 @@ const GameWindow: React.FC = () => {
             <span className="close-icon" />
           </Button>
         </WindowHeader>
-        <Toolbar>
-          <Button variant="menu" size="sm">
-            File
+        <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+          <Button variant="menu" size="sm" onClick={handleResetGame}>
+            Reset Game
           </Button>
-          <Button variant="menu" size="sm">
-            Edit
-          </Button>
+          <FlagCounter>🚩 {bombCounter}</FlagCounter>
+          <Counter value={timer} minLength={3} />
         </Toolbar>
         <Content>{renderTiles()}</Content>
       </Window>
