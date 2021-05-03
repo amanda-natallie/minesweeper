@@ -32,7 +32,3 @@ export const StyledButton = styled(Button)`
     color: gray;
   }
 `;
-
-export const EmptyTile = styled.span`
-  color: transparent;
-`;

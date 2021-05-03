@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import { Window, WindowHeader, Counter, Button, Toolbar } from "react95";
-import { generateTiles } from "../../helpers";
-import { TilesProps, TilesStatus } from "../../types";
+import { generateTiles, openEmptyTiles } from "../../helpers";
+import { TilesProps, TilesStatus, TilesValue } from "../../types";
 
 import TileButton from "../TileButton";
 import { Content, FlagCounter, Wrapper } from "./styles";
@@ -15,6 +15,24 @@ const GameWindow: React.FC = () => {
 
   const handleTileClick = (rowParam: number, columParam: number) => {
     !gameStarted && setGameStarted(true);
+
+    const currentTile = tiles[rowParam][columParam];
+    let newTiles = tiles.slice();
+
+    if (
+      [TilesStatus.Flagged, TilesStatus.Visible].includes(currentTile.status)
+    ) {
+      return;
+    }
+
+    if (currentTile.value === TilesValue.Bomb) {
+      //TODO: take care of bomb click
+    } else if (currentTile.value === TilesValue.None) {
+      setTiles(openEmptyTiles(newTiles, rowParam, columParam));
+    } else {
+      newTiles[rowParam][columParam].status = TilesStatus.Visible;
+      setTiles(newTiles);
+    }
   };
   const handleCellContext = (
     e: React.MouseEvent,

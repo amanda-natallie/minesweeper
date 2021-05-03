@@ -1,6 +1,6 @@
 import React from "react";
 import { TilesStatus, TilesValue } from "../../types";
-import { EmptyTile, StyledButton } from "./styles";
+import { StyledButton } from "./styles";
 
 interface Iprops {
   row: number;
@@ -26,18 +26,16 @@ const TileButton = ({
   const renderContent = (): React.ReactNode => {
     switch (status) {
       case TilesStatus.Opened:
-        return "";
+        return null;
       case TilesStatus.Flagged:
         return "🚩";
 
       case TilesStatus.Visible:
-        return value === TilesValue.Bomb ? (
-          "💣"
-        ) : value !== TilesValue.None ? (
-          value
-        ) : (
-          <EmptyTile>{value}</EmptyTile>
-        );
+        return value === TilesValue.Bomb
+          ? "💣"
+          : value !== TilesValue.None
+          ? value
+          : null;
 
       default:
         break;
