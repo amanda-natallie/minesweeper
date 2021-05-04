@@ -1,6 +1,6 @@
 # MineSweeper with React.JS and REDUX
 
-Welcome to my personal Minesweeper made with typescript and react. 
+Welcome to my personal Minesweeper Game made with typescript and react. 
 
 It's made with [React95](https://react95.io/) storybook lib, \
 Using Hooks to optimize the react lifecycle;\
