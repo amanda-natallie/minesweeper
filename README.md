@@ -1,46 +1,52 @@
-# Getting Started with Create React App
+# MineSweeper with React.JS and REDUX
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to my personal Minesweeper made with typescript and react. 
 
-## Available Scripts
+It's made with [React95](https://react95.io/) storybook lib, \
+Using Hooks to optimize the react lifecycle;\
+Managing store with Redux;\
+Styled Components customizing wrappers and positions;\
+Prettier & EsLint working together to a better code look\
 
-In the project directory, you can run:
 
-### `yarn start`
+## The folder structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).\
+the folders inside ```src``` 
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```
+ src
+    ├── components            # Game components, such as CloseButton, FeedbackModal, etc\
+    ├── constants             # Fixed variables of the game, such as max_rows, max_column and number_of_bombs\
+    ├── helpers               # helper functions to gather adjacent tiles and generate cells\
+    ├── store                 # Redux store. contains the Game and Modal modules\
+ ```
 
-### `yarn test`
+## The code
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+on ```src/components/GameWindow``` there is three useEffects that watches global behaviors such ```isGameStarted```, ```isGameOver``` and ```isGameWon```\
+Also it has a ```showAllBombs()``` method when the game is over. 
+Finally, a ```renderTiles()``` method to show all cells on screen.
 
-### `yarn build`
+Inside the ```renderTiles()``` method, there is another component named ```<TileButton />``` which carries all onClick logic for this game. 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Inside the ```TileButton/>``` component, there is local states to manage the flagged state and if it's open.\
+Also it has handlers to take care of the mouse's right click and left click, useEffect watchers to handle changes when the tile isOpen.
+In the  left click's handle callBack, it is also spreading the empty cells when clicked. 
+Finally, a last method to render the text of the current tile.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Some features
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- The whole applications looks like the old Windows 95 UI.
+- The user will not start clicking on a bomb, never.
+- The user can't set flags before the game is started.
+- The counter on top stops when game is won/lost and it resets when clicking on reset button.
 
-### `yarn eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Running the project
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Install dependencies and run the project in one command: 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### `yarn && yarn start`
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
