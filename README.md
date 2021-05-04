@@ -6,7 +6,7 @@ It's made with [React95](https://react95.io/) storybook lib, \
 Using Hooks to optimize the react lifecycle;\
 Managing store with Redux;\
 Styled Components customizing wrappers and positions;\
-Prettier & EsLint working together to a better code look\
+Prettier & EsLint working together to a better code look;
 
 
 ## The folder structure
@@ -16,10 +16,10 @@ the folders inside ```src```
 
 ```
  src
-    ├── components            # Game components, such as CloseButton, FeedbackModal, etc\
-    ├── constants             # Fixed variables of the game, such as max_rows, max_column and number_of_bombs\
-    ├── helpers               # helper functions to gather adjacent tiles and generate cells\
-    ├── store                 # Redux store. contains the Game and Modal modules\
+    ├── components            # Game components, such as CloseButton, FeedbackModal, etc
+    ├── constants             # Fixed variables of the game, such as max_rows, max_column and number_of_bombs
+    ├── helpers               # helper functions to gather adjacent tiles and generate cells
+    ├── store                 # Redux store. contains the Game and Modal modules
  ```
 
 ## The code
@@ -30,7 +30,7 @@ Finally, a ```renderTiles()``` method to show all cells on screen.
 
 Inside the ```renderTiles()``` method, there is another component named ```<TileButton />``` which carries all onClick logic for this game. 
 
-Inside the ```TileButton/>``` component, there is local states to manage the flagged state and if it's open.\
+Inside the ```TileButton/>``` component, there is local states to manage the flagged state and if it's open.
 Also it has handlers to take care of the mouse's right click and left click, useEffect watchers to handle changes when the tile isOpen.
 In the  left click's handle callBack, it is also spreading the empty cells when clicked. 
 Finally, a last method to render the text of the current tile.
