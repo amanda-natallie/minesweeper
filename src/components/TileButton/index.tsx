@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MAX_COLUMNS, MAX_ROWS } from "../../constants";
+import { MAX_COLUMNS, MAX_ROWS, NUMBER_OF_BOMBS } from "../../constants";
+import { generateTiles } from "../../helpers/tilesHelpers";
 import { RootReducer } from "../../store";
 import {
   decrementFlagCount,
   incrementFlagCount,
   openTiles,
+  setGameStarted,
   setIsGameOver,
+  setIsGameWon,
+  setTiles,
 } from "../../store/modules/game/actions";
-import { TilesValue } from "../../store/modules/game/types";
+import { TilesProps, TilesValue } from "../../store/modules/game/types";
 import { setModalInfo } from "../../store/modules/modal/actions";
 import { StyledButton } from "./styles";
 
@@ -22,19 +26,32 @@ const TileButton = ({ row, column, value }: Iprops) => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isFlagged, setIsFlagged] = useState<boolean>(false);
-
-  const { openedTiles } = useSelector((state: RootReducer) => state.game);
+  const {
+    openedTiles,
+    isGameWon,
+    isGameStarted,
+    flagCount,
+    isGameOver,
+  } = useSelector((state: RootReducer) => state.game);
 
   useEffect(() => {
-    if (!isOpen && openedTiles.includes(`${row},${column}`)) {
+    if (openedTiles.includes(`${row},${column}`)) {
       setIsOpen(true);
+    } else {
+      setIsOpen(false);
     }
   }, [openedTiles, setIsOpen]);
+
+  useEffect(() => {
+    if (!flagCount) {
+      setIsFlagged(false);
+    }
+  }, [flagCount]);
 
   const handleOnContext = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
-      if (!isOpen) {
+      if (!isOpen && isGameStarted) {
         if (isFlagged) {
           dispatch(decrementFlagCount());
           setIsFlagged(false);
@@ -44,18 +61,40 @@ const TileButton = ({ row, column, value }: Iprops) => {
         }
       }
     },
-    [dispatch, isOpen, isFlagged]
+    [dispatch, isOpen, isFlagged, isGameStarted]
   );
 
   const handleOnClick = useCallback(() => {
-    if (!isFlagged) {
+    if (!isFlagged && !(isGameWon || isGameOver)) {
+      if (!isGameStarted) {
+        let tiles: TilesProps[][] = generateTiles();
+        let currValue: TilesValue = tiles[row][column].value;
+        while (currValue === TilesValue.Bomb) {
+          tiles = generateTiles();
+          currValue = tiles[row][column].value;
+        }
+        dispatch(setGameStarted(true));
+        dispatch(setTiles(tiles));
+      }
       dispatch(openTiles([`${row},${column}`]));
     }
-  }, [dispatch, isFlagged]);
+  }, [dispatch, isFlagged, isGameStarted, isGameWon, isGameOver]);
 
   useEffect(() => {
     if (isOpen) {
+      if (isFlagged) {
+        dispatch(decrementFlagCount());
+        setIsFlagged(false);
+      }
+
+      if (openedTiles.length === MAX_ROWS * MAX_COLUMNS - NUMBER_OF_BOMBS) {
+        dispatch(setIsGameWon(true));
+      }
+
       if (value === TilesValue.Bomb) {
+        if (!openedTiles.length || isGameWon) {
+          return;
+        }
         dispatch(setIsGameOver(true));
         dispatch(
           setModalInfo({
@@ -69,9 +108,10 @@ const TileButton = ({ row, column, value }: Iprops) => {
         let tilesToOpen = [];
 
         const initialRow = !row ? 0 : row - 1;
-        const lastRow = row === MAX_ROWS ? MAX_ROWS : row + 1;
+        const lastRow = row === MAX_ROWS - 1 ? MAX_ROWS - 1 : row + 1;
         const initialColumn = !column ? 0 : column - 1;
-        const lastColumn = column === MAX_COLUMNS ? MAX_COLUMNS : column + 1;
+        const lastColumn =
+          column === MAX_COLUMNS - 1 ? MAX_COLUMNS - 1 : column + 1;
 
         for (let currRow = initialRow; currRow <= lastRow; currRow++) {
           for (
@@ -86,7 +126,7 @@ const TileButton = ({ row, column, value }: Iprops) => {
         dispatch(openTiles(tilesToOpen));
       }
     }
-  }, [isOpen, value]);
+  }, [isOpen]);
 
   const renderContent = (): React.ReactNode => {
     if (isOpen && value > 0) {

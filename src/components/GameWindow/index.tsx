@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Window, Counter, Button, Toolbar } from "react95";
 import { RootReducer } from "../../store";
-import { resetGame, setGameStarted } from "../../store/modules/game/actions";
+import {
+  openTiles,
+  resetGame,
+  setGameStarted,
+} from "../../store/modules/game/actions";
+import { TilesValue } from "../../store/modules/game/types";
 
 import { setModalInfo } from "../../store/modules/modal/actions";
 
@@ -13,13 +18,9 @@ import { Content, StyledWindowHeader, Wrapper } from "./styles";
 
 const GameWindow: React.FC = () => {
   const dispatch = useDispatch();
-  const {
-    flagCount,
-    isGameOver,
-    isGameStarted,
-    isGameWon,
-    tiles,
-  } = useSelector((state: RootReducer) => state.game);
+  const { isGameOver, isGameStarted, isGameWon, tiles } = useSelector(
+    (state: RootReducer) => state.game
+  );
   const [timer, setTimer] = useState<number>(0);
 
   const handleResetGame = (): void => {
@@ -28,27 +29,26 @@ const GameWindow: React.FC = () => {
   };
 
   useEffect(() => {
+    let counter: NodeJS.Timeout;
     if (isGameStarted) {
-      const counter = setInterval(() => {
+      counter = setInterval(() => {
         setTimer((oldTimer) => oldTimer + 1);
       }, 1000);
-
-      return () => {
-        clearInterval(counter);
-      };
     }
+    return () => {
+      clearInterval(counter);
+    };
   }, [isGameStarted]);
 
   useEffect(() => {
     if (isGameOver) {
-      setTimer(0);
       dispatch(setGameStarted(false));
-      // dispatch(setTiles(showAllBombs()));
+      showAllBombs();
       dispatch(
         setModalInfo({
           isOpen: true,
           title: "Game over",
-          message: "You clicked in one bomb! Game over.",
+          message: "You've clicked on a bomb! Game over.",
           icon: "💣🔥",
         })
       );
@@ -58,7 +58,7 @@ const GameWindow: React.FC = () => {
   useEffect(() => {
     if (isGameWon) {
       dispatch(setGameStarted(false));
-      // dispatch(setTiles(showAllBombs()));
+      showAllBombs();
       dispatch(
         setModalInfo({
           isOpen: true,
@@ -70,21 +70,17 @@ const GameWindow: React.FC = () => {
     }
   }, [isGameWon]);
 
-  // const showAllBombs = (): TilesProps[][] => {
-  //   let openTilesToOpen = [];
-
-  //   return currentTiles.map((row) =>
-  //     row.map((tile) => {
-  //       if (tile.value === TilesValue.Bomb) {
-  //         return {
-  //           ...tile,
-  //           status: TilesStatus.Visible,
-  //         };
-  //       }
-  //       return tile;
-  //     })
-  //   );
-  // };
+  const showAllBombs = () => {
+    let openTilesToOpen: string[] = [];
+    tiles.forEach((row, rowIndex) => {
+      row.forEach((column, columnIndex) => {
+        if (column.value === TilesValue.Bomb) {
+          openTilesToOpen.push(`${rowIndex},${columnIndex}`);
+        }
+      });
+    });
+    dispatch(openTiles(openTilesToOpen));
+  };
 
   const renderTiles = (): React.ReactNode => {
     return (

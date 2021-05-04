@@ -1,7 +1,7 @@
 import { Reducer } from "redux";
 import { generateTiles } from "../../../helpers/tilesHelpers";
 
-import { GameTypes, GameState, TilesValue, TilesStatus } from "./types";
+import { GameTypes, GameState } from "./types";
 
 const INITIAL_STATE: GameState = {
   tiles: generateTiles(),
@@ -50,15 +50,22 @@ const reducer: Reducer<GameState> = (state = INITIAL_STATE, action) => {
         isGameWon: action.payload,
       };
     case GameTypes.OPEN_TILES:
-      // todo: do not add already opened tiles
+      const tilesToOpen = action.payload.filter(
+        (tile: string) => !state.openedTiles.includes(tile)
+      );
+
+      if (!tilesToOpen.length) {
+        return state;
+      }
+
       return {
         ...state,
-        openedTiles: [...state.openedTiles, ...action.payload],
+        openedTiles: [...state.openedTiles, ...tilesToOpen],
       };
     case GameTypes.RESET_GAME:
       return {
         ...INITIAL_STATE,
-        tiles: generateTiles(),
+        tiles: state.tiles,
       };
     default:
       return state;

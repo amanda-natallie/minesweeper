@@ -24,12 +24,6 @@ export enum TilesValue {
   Bomb = 9,
 }
 
-export enum TilesStatus {
-  Closed,
-  Visible,
-  Flagged,
-}
-
 export type TilesProps = {
   value: TilesValue;
 };
