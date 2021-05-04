@@ -50,7 +50,6 @@ export const generateTiles = (): TilesProps[][] => {
     for (let c = 0; c < MAX_COLUMNS; c++) {
       tiles[r].push({
         value: TilesValue.None,
-        status: TilesStatus.Closed,
       });
     }
   }
@@ -123,7 +122,7 @@ export const generateTiles = (): TilesProps[][] => {
   return tiles;
 };
 
-export const openEmptyTiles = (
+/* export const openEmptyTiles = (
   tiles: TilesProps[][],
   row: number,
   column: number
@@ -240,4 +239,4 @@ export const openEmptyTiles = (
   }
 
   return newTiles;
-};
+}; */

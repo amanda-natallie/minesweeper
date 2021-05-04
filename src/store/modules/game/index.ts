@@ -1,15 +1,13 @@
 import { Reducer } from "redux";
+import { generateTiles } from "../../../helpers/tilesHelpers";
 
 import { GameTypes, GameState, TilesValue, TilesStatus } from "./types";
 
 const INITIAL_STATE: GameState = {
-  tiles: [],
-  currentTile: {
-    value: TilesValue.None,
-    status: TilesStatus.Closed,
-  },
+  tiles: generateTiles(),
+  openedTiles: [],
   isGameStarted: false,
-  bombCounter: 0,
+  flagCount: 0,
   isGameOver: false,
   isGameWon: false,
 };
@@ -31,10 +29,15 @@ const reducer: Reducer<GameState> = (state = INITIAL_STATE, action) => {
         ...state,
         isGameStarted: action.payload,
       };
-    case GameTypes.SET_BOMB_COUNTER:
+    case GameTypes.INCREMENT_FLAG_COUNT:
       return {
         ...state,
-        bombCounter: action.payload,
+        flagCount: state.flagCount + 1,
+      };
+    case GameTypes.DECREMENT_FLAG_COUNT:
+      return {
+        ...state,
+        flagCount: state.flagCount - 1,
       };
     case GameTypes.SET_IS_GAME_OVER:
       return {
@@ -46,7 +49,17 @@ const reducer: Reducer<GameState> = (state = INITIAL_STATE, action) => {
         ...state,
         isGameWon: action.payload,
       };
-
+    case GameTypes.OPEN_TILES:
+      // todo: do not add already opened tiles
+      return {
+        ...state,
+        openedTiles: [...state.openedTiles, ...action.payload],
+      };
+    case GameTypes.RESET_GAME:
+      return {
+        ...INITIAL_STATE,
+        tiles: generateTiles(),
+      };
     default:
       return state;
   }

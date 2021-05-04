@@ -2,9 +2,13 @@ export enum GameTypes {
   SET_TILES = "@game/SET_TILES",
   SET_CURRENT_TILE = "@game/SET_CURRENT_TILE",
   SET_GAME_STARTED = "@game/SET_GAME_STARTED",
-  SET_BOMB_COUNTER = "@game/SET_BOMB_COUNTER",
+  INCREMENT_FLAG_COUNT = "@game/INCREMENT_FLAG_COUNT",
+  DECREMENT_FLAG_COUNT = "@game/DECREMENT_FLAG_COUNT",
   SET_IS_GAME_OVER = "@game/SET_IS_GAME_OVER",
   SET_IS_GAME_WON = "@game/SET_IS_GAME_WON",
+  OPEN_TILES = "@game/OPEN_TILES",
+  FLAG_TILE = "@game/FLAG_TILE",
+  RESET_GAME = "@game/RESET_GAME",
 }
 
 export enum TilesValue {
@@ -28,14 +32,13 @@ export enum TilesStatus {
 
 export type TilesProps = {
   value: TilesValue;
-  status: TilesStatus;
 };
 
 export interface GameState {
   tiles: TilesProps[][];
-  currentTile: TilesProps;
+  openedTiles: string[];
   isGameStarted: boolean;
-  bombCounter: number;
+  flagCount: number;
   isGameOver: boolean;
   isGameWon: boolean;
 }

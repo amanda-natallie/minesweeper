@@ -1,140 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Window, Counter, Button, Toolbar } from "react95";
-import { MAX_COLUMNS, MAX_ROWS } from "../../constants";
-import { generateTiles, openEmptyTiles } from "../../helpers/tilesHelpers";
-import {
-  TilesProps,
-  TilesStatus,
-  TilesValue,
-} from "../../store/modules/game/types";
+import { RootReducer } from "../../store";
+import { resetGame, setGameStarted } from "../../store/modules/game/actions";
+
 import { setModalInfo } from "../../store/modules/modal/actions";
 
 import CloseButton from "../CloseButton";
+import FlagCounter from "../FlagCounter";
 import TileButton from "../TileButton";
-import { Content, FlagCounter, StyledWindowHeader, Wrapper } from "./styles";
+import { Content, StyledWindowHeader, Wrapper } from "./styles";
 
 const GameWindow: React.FC = () => {
   const dispatch = useDispatch();
+  const {
+    flagCount,
+    isGameOver,
+    isGameStarted,
+    isGameWon,
+    tiles,
+  } = useSelector((state: RootReducer) => state.game);
   const [timer, setTimer] = useState<number>(0);
 
-  const [tiles, setTiles] = useState<TilesProps[][]>(generateTiles());
-  const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [bombCounter, setBombCounter] = useState<number>(0);
-  const [gameOver, setIsGameOver] = useState<boolean>(false);
-  const [gameWon, setIsGameWon] = useState<boolean>(false);
-
-  const handleTileClick = (
-    e: React.MouseEvent,
-    rowParam: number,
-    columParam: number
-  ) => {
-    let newTiles = tiles.slice();
-    let currentTile = newTiles[rowParam][columParam];
-
-    if (gameOver || gameWon) {
-      return;
-    }
-
-    // make sure we never click on a bomb at the start
-    if (!gameStarted) {
-      while (currentTile.value === TilesValue.Bomb) {
-        console.log("hit a bomb", currentTile);
-        newTiles = generateTiles();
-        currentTile = newTiles[rowParam][columParam];
-      }
-      setGameStarted(true);
-    }
-
-    if (
-      [TilesStatus.Flagged, TilesStatus.Visible].includes(currentTile.status)
-    ) {
-      return;
-    }
-
-    if (currentTile.value === TilesValue.Bomb) {
-      setIsGameOver(true);
-    } else if (currentTile.value === TilesValue.None) {
-      newTiles = openEmptyTiles(newTiles, rowParam, columParam);
-    } else {
-      newTiles[rowParam][columParam].status = TilesStatus.Visible;
-    }
-
-    //check if game is won
-    let noEmptyTilesLeft = false;
-    for (let r = 0; r < MAX_ROWS; r++) {
-      tiles.push([]);
-      for (let c = 0; c < MAX_COLUMNS; c++) {
-        const currentTile = tiles[r][c];
-
-        if (
-          currentTile.value !== TilesValue.Bomb &&
-          currentTile.status === TilesStatus.Closed
-        ) {
-          noEmptyTilesLeft = true;
-          break;
-        }
-      }
-    }
-
-    if (!noEmptyTilesLeft) {
-      newTiles = tiles.map((rows) =>
-        rows.map((col) => {
-          if (col.value === TilesValue.Bomb) {
-            return {
-              ...col,
-              status: TilesStatus.Flagged,
-            };
-          }
-          return col;
-        })
-      );
-      setIsGameWon(true);
-    }
-    setTiles(newTiles);
-  };
-  const handleRightClick = (
-    e: React.MouseEvent,
-    rowParam: number,
-    columParam: number
-  ) => {
-    e.preventDefault();
-
-    if (!gameStarted) {
-      return;
-    }
-
-    const currentTile = tiles[rowParam][columParam];
-
-    let currentBoard = tiles.slice();
-
-    switch (currentTile.status) {
-      case TilesStatus.Visible:
-        break;
-      case TilesStatus.Closed:
-        currentBoard[rowParam][columParam].status = TilesStatus.Flagged;
-        setBombCounter((bombCounter) => bombCounter + 1);
-        break;
-      case TilesStatus.Flagged:
-        currentBoard[rowParam][columParam].status = TilesStatus.Closed;
-        setBombCounter((bombCounter) => bombCounter - 1);
-        break;
-    }
-
-    setTiles(currentBoard);
-  };
-
   const handleResetGame = (): void => {
-    setIsGameOver(false);
-    setGameStarted(false);
     setTimer(0);
-    setTiles(generateTiles());
-    setBombCounter(0);
-    setIsGameWon(false);
+    dispatch(resetGame());
   };
 
   useEffect(() => {
-    if (gameStarted) {
+    if (isGameStarted) {
       const counter = setInterval(() => {
         setTimer((oldTimer) => oldTimer + 1);
       }, 1000);
@@ -143,13 +37,13 @@ const GameWindow: React.FC = () => {
         clearInterval(counter);
       };
     }
-  }, [gameStarted]);
+  }, [isGameStarted]);
 
   useEffect(() => {
-    if (gameOver) {
-      setGameStarted(false);
+    if (isGameOver) {
       setTimer(0);
-      setTiles(showAllBombs());
+      dispatch(setGameStarted(false));
+      // dispatch(setTiles(showAllBombs()));
       dispatch(
         setModalInfo({
           isOpen: true,
@@ -159,53 +53,52 @@ const GameWindow: React.FC = () => {
         })
       );
     }
-  }, [gameOver]);
+  }, [isGameOver]);
 
   useEffect(() => {
-    if (gameWon) {
-      setGameStarted(false);
-      setTiles(showAllBombs());
+    if (isGameWon) {
+      dispatch(setGameStarted(false));
+      // dispatch(setTiles(showAllBombs()));
       dispatch(
         setModalInfo({
           isOpen: true,
-          title: "game completed!",
+          title: "Game completed!",
           message: "You won! Congratulations",
           icon: "🎉🎉",
         })
       );
     }
-  }, [gameWon]);
+  }, [isGameWon]);
 
-  const showAllBombs = (): TilesProps[][] => {
-    const currentTiles = tiles.slice();
-    return currentTiles.map((row) =>
-      row.map((tile) => {
-        if (tile.value === TilesValue.Bomb) {
-          return {
-            ...tile,
-            status: TilesStatus.Visible,
-          };
-        }
-        return tile;
-      })
-    );
-  };
+  // const showAllBombs = (): TilesProps[][] => {
+  //   let openTilesToOpen = [];
+
+  //   return currentTiles.map((row) =>
+  //     row.map((tile) => {
+  //       if (tile.value === TilesValue.Bomb) {
+  //         return {
+  //           ...tile,
+  //           status: TilesStatus.Visible,
+  //         };
+  //       }
+  //       return tile;
+  //     })
+  //   );
+  // };
 
   const renderTiles = (): React.ReactNode => {
-    return tiles.map((row, rowIndex) =>
-      row.map((column, columnIndex) => (
-        <TileButton
-          key={`${rowIndex}-${columnIndex}`}
-          row={rowIndex}
-          onClick={handleTileClick}
-          onContext={(e: React.MouseEvent) =>
-            handleRightClick(e, rowIndex, columnIndex)
-          }
-          column={columnIndex}
-          status={column.status}
-          value={column.value}
-        />
-      ))
+    return (
+      tiles &&
+      tiles.map((row, rowIndex) =>
+        row.map((column, columnIndex) => (
+          <TileButton
+            key={`${rowIndex}-${columnIndex}`}
+            row={rowIndex}
+            column={columnIndex}
+            value={column.value}
+          />
+        ))
+      )
     );
   };
 
@@ -221,7 +114,7 @@ const GameWindow: React.FC = () => {
             <Button variant="menu" size="sm" onClick={handleResetGame}>
               Reset Game
             </Button>
-            <FlagCounter>🚩 {bombCounter}</FlagCounter>
+            <FlagCounter />
             <Counter value={timer} minLength={3} />
           </Toolbar>
           <Content>{renderTiles()}</Content>

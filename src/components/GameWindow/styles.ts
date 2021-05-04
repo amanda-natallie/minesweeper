@@ -24,6 +24,3 @@ export const Content = styled(WindowContent)`
   display: flex;
   flex-wrap: wrap;
 `;
-export const FlagCounter = styled.div`
-  display: flex;
-`;
