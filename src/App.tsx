@@ -3,10 +3,10 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 
 import { styleReset } from "react95";
 
+import { Provider } from "react-redux";
 import original from "react95/dist/themes/original";
 import GameWindow from "./components/GameWindow";
 import ModalContainer from "./components/ModalContainer";
-import { Provider } from "react-redux";
 import store from "./store";
 
 const GlobalStyles = createGlobalStyle`

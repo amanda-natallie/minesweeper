@@ -15,6 +15,7 @@ import CloseButton from "../CloseButton";
 import FlagCounter from "../FlagCounter";
 import TileButton from "../TileButton";
 import { Content, StyledWindowHeader, Wrapper } from "./styles";
+import ContactBox from "../ContactBox";
 
 const GameWindow: React.FC = () => {
   const dispatch = useDispatch();
@@ -114,6 +115,7 @@ const GameWindow: React.FC = () => {
             <Counter value={timer} minLength={3} />
           </Toolbar>
           <Content>{renderTiles()}</Content>
+          <ContactBox />
         </Window>
       </Wrapper>
     </React.Fragment>
